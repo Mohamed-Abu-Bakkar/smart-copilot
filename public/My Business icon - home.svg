@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <!-- Soft Background Pill -->
+  <rect x="0" y="0" width="48" height="48" rx="14" fill="#FFF3E0" />
+  
+  <!-- Icon Graphics -->
+  <g stroke="#D97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="translate(12, 12) scale(1)">
+    <path d="M3 9l1.5-5h15L21 9" />
+    <path d="M3 9h18" />
+    <path d="M3 9a2 2 0 0 0 2 2h1.5a2 2 0 0 0 2-2" />
+    <path d="M8.5 9a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2" />
+    <path d="M15.5 9a2 2 0 0 0 2 2H19a2 2 0 0 0 2-2" />
+    <path d="M4 11v9a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-9" />
+    <path d="M10 21v-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5" />
+  </g>
+</svg>
