@@ -12,15 +12,19 @@ const message = v.object({ role: v.union(v.literal("user"), v.literal("assistant
 
 export default defineSchema({
   workspaces: defineTable({
+    // ownerId is optional only to preserve existing unauthenticated records during rollout.
+    // Every new account-owned workspace is written with an authenticated ownerId.
+    ownerId: v.optional(v.string()),
     workspaceId: v.string(),
     profile: v.optional(profile),
     documents: v.array(savedDocument),
     messages: v.array(message),
     updatedAt: v.number(),
-  }).index("by_workspaceId", ["workspaceId"]),
+  })
+    .index("by_workspaceId", ["workspaceId"])
+    .index("by_ownerId", ["ownerId"]),
 
-  // Temporary legacy table. Keep until migrateLegacyWorkspaces has been run
-  // against the deployment that contains the old demoWorkspaces records.
+  // Temporary legacy table retained for the pre-auth migration.
   demoWorkspaces: defineTable({
     workspaceId: v.string(),
     profile: v.optional(profile),
