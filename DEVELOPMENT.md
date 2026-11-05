@@ -2,9 +2,10 @@
 
 ## Persistent workspace database
 Smart Copilot uses Convex as its database for the shared demo workspace:
-- Business profile
+- Business profile, including business goals
 - Saved policy and document drafts
 - AI advisor conversation history (last 100 messages)
+- One shared profile context consumed by the Advisor, Scheme Navigator and Document Studio
 
 A browser-generated workspace ID links this development workspace to its Convex record. This survives refreshes and browser restarts on the same browser profile. Because authentication is intentionally deferred, it does not yet sync across different browsers/devices and must not be treated as private multi-user production storage.
 
@@ -19,6 +20,9 @@ A browser-generated workspace ID links this development workspace to its Convex 
 8. Open `/onboarding` to create a blank workspace, or `/business` to edit it.
 
 After changing environment variables, restart the Next.js server. Do not commit `.env.local`, API keys, Convex deployment tokens, or production secrets.
+
+## Shared business context
+The Advisor sends the latest Convex profile to the AI endpoint with each request. The Document Studio includes the same profile when drafting and asks the owner only for document-specific rules. The Scheme Navigator can generate cautious, profile-aware discovery suggestions from a curated list of official portals; matches are leads to verify, never eligibility decisions. Convex subscriptions keep profile edits visible across these modules without separate copies of the profile.
 
 ## Security and next milestone
 Authentication is intentionally deferred. The current browser-generated workspace ID is a development convenience, not an authentication or authorization boundary. Before public or multi-user deployment, add authentication and enforce ownership checks in every Convex query and mutation. Rotate any API key or deployment token previously pasted into chat; never reuse exposed credentials.
