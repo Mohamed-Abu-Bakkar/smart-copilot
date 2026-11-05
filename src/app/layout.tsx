@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ConvexClientProvider } from "@/components/ConvexClientProvider";
+import { DemoWorkspaceProvider } from "@/lib/demo-workspace";
 import { getToken } from "@/lib/auth-server";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
@@ -16,7 +17,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en">
       <body className={inter.variable + " font-sans antialiased"}>
-        <ConvexClientProvider initialToken={token}>{children}</ConvexClientProvider>
+        <ConvexClientProvider initialToken={token}>
+          <DemoWorkspaceProvider>{children}</DemoWorkspaceProvider>
+        </ConvexClientProvider>
       </body>
     </html>
   );
