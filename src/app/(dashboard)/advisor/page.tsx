@@ -1,5 +1,6 @@
 "use client";
 import { FormEvent, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Bot, Send, UserRound, LoaderCircle, TrendingUp, Megaphone, Package, ClipboardList, Sparkles } from "lucide-react";
 import { MarkdownMessage } from "@/components/MarkdownMessage";
@@ -7,10 +8,12 @@ import { useDemoWorkspace } from "@/lib/demo-workspace";
 type Message = { role:"user"|"assistant"; content:string };
 const suggestions=[{label:"How can I increase sales?",icon:TrendingUp},{label:"Help me plan a low-cost marketing campaign",icon:Megaphone},{label:"How can I manage inventory better?",icon:Package},{label:"What information do you need to advise my business?",icon:ClipboardList}];
 export default function AdvisorPage(){
+ const searchParams = useSearchParams();
  const {profile,messages:storedMessages,saveMessages,ready}=useDemoWorkspace();
  const [messages,setMessages]=useState<Message[]>([]);
  useEffect(()=>{if(ready){setMessages(storedMessages.length?storedMessages:[{role:"assistant",content:profile ? "Hello! I can help with " + profile.businessName + ". I will use the details you saved in My Business and ask when something important is missing." : "Welcome to Smart Copilot. Your business profile is blank, so I will ask a few questions before making business-specific recommendations."}]);}},[ready,storedMessages,profile]);
  const [input,setInput]=useState(""); const [loading,setLoading]=useState(false); const [error,setError]=useState("");
+ useEffect(()=>{const prompt=searchParams.get("prompt")||searchParams.get("q");if(prompt)setInput(prompt);},[searchParams]);
  async function send(value=input){const message=value.trim();if(!message||loading)return;const next=[...messages,{role:"user" as const,content:message}];setMessages(next);setInput("");setLoading(true);setError("");try{await saveMessages([{role:"user",content:message}]);const res=await fetch("/api/assistant",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message,profile,history:messages.slice(-8)})});const data=await res.json();if(!res.ok)throw new Error(data.error||"AI request failed");setMessages(current=>[...current,{role:"assistant",content:data.answer}]);await saveMessages([{role:"assistant",content:data.answer}]);}catch(e){setError(e instanceof Error?e.message:"Unable to get a response");}finally{setLoading(false);}}
  function submit(e:FormEvent){e.preventDefault();void send();}
  return <div className="px-4 py-4 flex flex-col gap-4 text-slate-main min-h-full">
