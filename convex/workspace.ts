@@ -21,8 +21,12 @@ export const saveProfile = mutation({
   args: { workspaceId: v.string(), profile },
   handler: async (ctx, { workspaceId, profile }) => {
     const existing = await ctx.db.query("demoWorkspaces").withIndex("by_workspaceId", q => q.eq("workspaceId", workspaceId)).unique();
-    if (existing) await ctx.db.patch(existing._id, { profile, updatedAt: Date.now() });
-    else await ctx.db.insert("demoWorkspaces", { workspaceId, profile, documents: [], messages: [], updatedAt: Date.now() });
+    if (existing) {
+      await ctx.db.patch(existing._id, { profile, updatedAt: Date.now() });
+      return { id: existing._id, workspaceId, action: "updated" as const };
+    }
+    const id = await ctx.db.insert("demoWorkspaces", { workspaceId, profile, documents: [], messages: [], updatedAt: Date.now() });
+    return { id, workspaceId, action: "inserted" as const };
   },
 });
 
