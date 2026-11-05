@@ -13,8 +13,8 @@ export type BusinessProfile = {
 export type SavedDocument = { id: string; title: string; type: string; content: string; updatedAt: number };
 export type AdvisorMessage = { role: "user" | "assistant"; content: string; createdAt?: number };
 type Workspace = {
-  profile: BusinessProfile | null; documents: SavedDocument[]; messages: AdvisorMessage[]; ready: boolean;
-  setProfile: (profile: BusinessProfile) => Promise<void>;
+  profile: BusinessProfile | null; documents: SavedDocument[]; messages: AdvisorMessage[]; ready: boolean; workspaceId: string; deploymentUrl: string;
+  setProfile: (profile: BusinessProfile) => Promise<{ id: string; workspaceId: string; action: "inserted" | "updated" }>;
   saveDocument: (doc: Omit<SavedDocument, "id" | "updatedAt"> & { id?: string }) => Promise<SavedDocument>;
   deleteDocument: (id: string) => Promise<void>;
   saveMessages: (messages: AdvisorMessage[]) => Promise<void>;
@@ -49,7 +49,9 @@ function WorkspaceDataProvider({ children }: { children: React.ReactNode }) {
   const messages = data?.messages ?? [];
   const setProfile = useCallback(async (next: BusinessProfile) => {
     if (!workspaceId) throw new Error("Workspace is still initializing.");
-    await saveProfileMutation({ workspaceId, profile: next });
+    const result = await saveProfileMutation({ workspaceId, profile: next }) as { id: string; workspaceId: string; action: "inserted" | "updated" };
+    if (!result?.id) throw new Error("Convex did not confirm a database record. Check the Convex deployment and function logs.");
+    return result;
   }, [workspaceId, saveProfileMutation]);
   const saveDocument = useCallback(async (doc: Omit<SavedDocument, "id" | "updatedAt"> & { id?: string }) => {
     if (!workspaceId) throw new Error("Workspace is still initializing.");
@@ -74,9 +76,9 @@ function WorkspaceDataProvider({ children }: { children: React.ReactNode }) {
   }, [workspaceId, resetMutation]);
 
   const value = useMemo(() => ({
-    profile, documents, messages, ready: clientReady && data !== undefined,
+    profile, documents, messages, ready: clientReady && data !== undefined, workspaceId, deploymentUrl: process.env.NEXT_PUBLIC_CONVEX_URL || "",
     setProfile, saveDocument, deleteDocument, saveMessages, resetWorkspace,
-  }), [profile, documents, messages, clientReady, data, setProfile, saveDocument, deleteDocument, saveMessages, resetWorkspace]);
+  }), [profile, documents, messages, clientReady, data, workspaceId, setProfile, saveDocument, deleteDocument, saveMessages, resetWorkspace]);
 
   return <WorkspaceContext.Provider value={value}>{children}</WorkspaceContext.Provider>;
 }
