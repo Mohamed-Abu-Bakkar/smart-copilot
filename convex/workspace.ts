@@ -5,6 +5,7 @@ const profile = v.object({
   businessName: v.string(), category: v.string(), industry: v.string(), location: v.string(),
   stage: v.string(), storeType: v.string(), products: v.array(v.string()),
   employeeCount: v.optional(v.number()), investmentBudget: v.optional(v.string()), registrations: v.array(v.string()),
+  goals: v.optional(v.array(v.string())),
 });
 const savedDocument = v.object({ id: v.string(), title: v.string(), type: v.string(), content: v.string(), updatedAt: v.number() });
 const message = v.object({ role: v.union(v.literal("user"), v.literal("assistant")), content: v.string(), createdAt: v.number() });
