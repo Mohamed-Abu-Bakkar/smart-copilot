@@ -13,19 +13,19 @@ const message = v.object({ role: v.union(v.literal("user"), v.literal("assistant
 export const get = query({
   args: { workspaceId: v.string() },
   handler: async (ctx, { workspaceId }) => {
-    return await ctx.db.query("demoWorkspaces").withIndex("by_workspaceId", q => q.eq("workspaceId", workspaceId)).unique();
+    return await ctx.db.query("workspaces").withIndex("by_workspaceId", q => q.eq("workspaceId", workspaceId)).unique();
   },
 });
 
 export const saveProfile = mutation({
   args: { workspaceId: v.string(), profile },
   handler: async (ctx, { workspaceId, profile }) => {
-    const existing = await ctx.db.query("demoWorkspaces").withIndex("by_workspaceId", q => q.eq("workspaceId", workspaceId)).unique();
+    const existing = await ctx.db.query("workspaces").withIndex("by_workspaceId", q => q.eq("workspaceId", workspaceId)).unique();
     if (existing) {
       await ctx.db.patch(existing._id, { profile, updatedAt: Date.now() });
       return { id: existing._id, workspaceId, action: "updated" as const };
     }
-    const id = await ctx.db.insert("demoWorkspaces", { workspaceId, profile, documents: [], messages: [], updatedAt: Date.now() });
+    const id = await ctx.db.insert("workspaces", { workspaceId, profile, documents: [], messages: [], updatedAt: Date.now() });
     return { id, workspaceId, action: "inserted" as const };
   },
 });
@@ -33,16 +33,16 @@ export const saveProfile = mutation({
 export const saveDocument = mutation({
   args: { workspaceId: v.string(), document: savedDocument },
   handler: async (ctx, { workspaceId, document }) => {
-    const existing = await ctx.db.query("demoWorkspaces").withIndex("by_workspaceId", q => q.eq("workspaceId", workspaceId)).unique();
+    const existing = await ctx.db.query("workspaces").withIndex("by_workspaceId", q => q.eq("workspaceId", workspaceId)).unique();
     if (existing) await ctx.db.patch(existing._id, { documents: [document, ...existing.documents.filter(d => d.id !== document.id)], updatedAt: Date.now() });
-    else await ctx.db.insert("demoWorkspaces", { workspaceId, documents: [document], messages: [], updatedAt: Date.now() });
+    else await ctx.db.insert("workspaces", { workspaceId, documents: [document], messages: [], updatedAt: Date.now() });
   },
 });
 
 export const deleteDocument = mutation({
   args: { workspaceId: v.string(), documentId: v.string() },
   handler: async (ctx, { workspaceId, documentId }) => {
-    const existing = await ctx.db.query("demoWorkspaces").withIndex("by_workspaceId", q => q.eq("workspaceId", workspaceId)).unique();
+    const existing = await ctx.db.query("workspaces").withIndex("by_workspaceId", q => q.eq("workspaceId", workspaceId)).unique();
     if (existing) await ctx.db.patch(existing._id, { documents: existing.documents.filter(d => d.id !== documentId), updatedAt: Date.now() });
   },
 });
@@ -50,17 +50,53 @@ export const deleteDocument = mutation({
 export const saveMessages = mutation({
   args: { workspaceId: v.string(), messages: v.array(message) },
   handler: async (ctx, { workspaceId, messages }) => {
-    const existing = await ctx.db.query("demoWorkspaces").withIndex("by_workspaceId", q => q.eq("workspaceId", workspaceId)).unique();
+    const existing = await ctx.db.query("workspaces").withIndex("by_workspaceId", q => q.eq("workspaceId", workspaceId)).unique();
     const next = [...(existing?.messages ?? []), ...messages].slice(-100);
     if (existing) await ctx.db.patch(existing._id, { messages: next, updatedAt: Date.now() });
-    else await ctx.db.insert("demoWorkspaces", { workspaceId, documents: [], messages: next, updatedAt: Date.now() });
+    else await ctx.db.insert("workspaces", { workspaceId, documents: [], messages: next, updatedAt: Date.now() });
   },
 });
 
 export const reset = mutation({
   args: { workspaceId: v.string() },
   handler: async (ctx, { workspaceId }) => {
-    const existing = await ctx.db.query("demoWorkspaces").withIndex("by_workspaceId", q => q.eq("workspaceId", workspaceId)).unique();
+    const existing = await ctx.db.query("workspaces").withIndex("by_workspaceId", q => q.eq("workspaceId", workspaceId)).unique();
     if (existing) await ctx.db.delete(existing._id);
+  },
+});
+
+/**
+ * One-time migration: copies all existing demoWorkspaces rows into workspaces,
+ * preserving workspace IDs, profiles, documents and messages, then removes
+ * the legacy rows. Run with: npx convex run workspace:migrateLegacyWorkspaces
+ */
+export const migrateLegacyWorkspaces = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const legacyRows = await ctx.db.query("demoWorkspaces").collect();
+    let migrated = 0;
+    let alreadyPresent = 0;
+
+    for (const legacy of legacyRows) {
+      const current = await ctx.db.query("workspaces")
+        .withIndex("by_workspaceId", q => q.eq("workspaceId", legacy.workspaceId))
+        .unique();
+
+      if (current) {
+        alreadyPresent += 1;
+      } else {
+        await ctx.db.insert("workspaces", {
+          workspaceId: legacy.workspaceId,
+          ...(legacy.profile ? { profile: legacy.profile } : {}),
+          documents: legacy.documents,
+          messages: legacy.messages,
+          updatedAt: legacy.updatedAt,
+        });
+        migrated += 1;
+      }
+      await ctx.db.delete(legacy._id);
+    }
+
+    return { migrated, alreadyPresent, legacyRowsRemoved: legacyRows.length };
   },
 });
