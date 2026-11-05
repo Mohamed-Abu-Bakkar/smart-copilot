@@ -80,31 +80,3 @@ export const reset = mutation({
     if (existing) await ctx.db.delete(existing._id);
   },
 });
-
-/**
- * One-time migration of the pre-auth demoWorkspaces table.
- * Rows remain unowned and are deliberately not assigned to an account automatically.
- * Never expose browser-generated workspace IDs as proof of ownership.
- */
-export const migrateLegacyWorkspaces = mutation({
-  args: {},
-  handler: async (ctx) => {
-    const legacyRows = await ctx.db.query("demoWorkspaces").collect();
-    let migrated = 0;
-    for (const legacy of legacyRows) {
-      const current = await ctx.db.query("workspaces").withIndex("by_workspaceId", q => q.eq("workspaceId", legacy.workspaceId)).unique();
-      if (!current) {
-        await ctx.db.insert("workspaces", {
-          workspaceId: legacy.workspaceId,
-          ...(legacy.profile ? { profile: legacy.profile } : {}),
-          documents: legacy.documents,
-          messages: legacy.messages,
-          updatedAt: legacy.updatedAt,
-        });
-        migrated += 1;
-      }
-      await ctx.db.delete(legacy._id);
-    }
-    return { migrated, legacyRowsRemoved: legacyRows.length };
-  },
-});
