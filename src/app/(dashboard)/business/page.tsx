@@ -1,127 +1,17 @@
 "use client";
-
 import Link from "next/link";
-import { Edit2, Store, Building2, MapPin, Tag } from "lucide-react";
-
-const profile = {
-  name: "AFIYA Bags",
-  category: "Retail Shop",
-  industry: "Fashion & Accessories",
-  location: "Tiruchirappalli, Tamil Nadu",
-  stage: "Established",
-  storeType: "Physical Store",
-  products: ["Clothing", "Bags", "Footwear"],
-  employeeCount: 3,
-  investmentBudget: "₹2–5 Lakhs",
-  registrations: ["GST Registration", "Udyam Registration"],
-};
-
-const stats = [
-  { label: "Employees", value: "3" },
-  { label: "Registrations", value: "2" },
-  { label: "Products", value: "3 categories" },
-];
-
-export default function BusinessPage() {
-  return (
-    <div className="px-4 py-3 sm:py-4 space-y-4 sm:space-y-6 text-slate-main min-h-full">
-      <section>
-        <div className="flex items-center gap-2 mb-1">
-          <Store className="w-5 h-5 text-teal-primary" />
-        </div>
-        <p className="text-sm text-slate-muted">Manage your business profile and details.</p>
-        <div className="flex items-center gap-3 mt-3">
-          <button
-            className="flex items-center gap-2 px-4 py-2 rounded-full border border-slate-200 bg-white text-sm font-medium text-slate-main hover:bg-slate-50 transition-colors"
-          >
-            <Edit2 className="w-4 h-4" />
-            Edit Profile
-          </button>
-        </div>
-      </section>
-
-      {/* Business card */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm">
-        <div className="flex flex-col md:flex-row md:items-center gap-4">
-          <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-[#e6fffa] text-teal-primary font-bold text-lg shadow-sm">
-            🏪
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-base font-semibold text-slate-main">{profile.name}</span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-teal-primary/10 text-teal-primary font-bold">{profile.stage}</span>
-            </div>
-            <p className="text-xs text-slate-muted">{profile.category} · {profile.industry}</p>
-            <div className="flex items-center gap-2 mt-2">
-              <MapPin className="w-3 h-3 text-slate-muted" />
-              <span className="text-xs text-slate-muted">{profile.location}</span>
-            </div>
-          </div>
-          <Link
-            href="/documents"
-            className="px-4 py-2 rounded-lg border border-teal-primary/30 bg-teal-primary/5 text-teal-primary text-xs font-semibold hover:bg-teal-primary/10 transition-colors"
-          >
-            Create Document
-          </Link>
-        </div>
-      </section>
-
-      {/* Stats */}
-      <section>
-        <h3 className="text-xs font-semibold text-slate-muted uppercase tracking-wider mb-4">At a Glance</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {stats.map((s) => (
-            <div
-              key={s.label}
-              className="rounded-xl border border-slate-200 bg-white p-3 text-center shadow-sm"
-            >
-              <span className="block text-sm font-bold text-teal-primary-dark">{s.value}</span>
-              <span className="block text-xs text-slate-muted">{s.label}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Details */}
-      <section className="space-y-2 sm:space-y-3">
-        <h3 className="text-xs font-semibold text-slate-muted uppercase tracking-wider">Business Details</h3>
-        <div className="space-y-2">
-          {[
-            { label: "Store Type", value: profile.storeType, icon: Building2 },
-            { label: "Location", value: profile.location, icon: MapPin },
-            { label: "Products", value: profile.products.join(", "), icon: Tag },
-          ].map((d) => {
-            const Icon = d.icon;
-            return (
-              <div
-                key={d.label}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-slate-200 bg-white"
-              >
-                <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-slate-50 text-slate-muted">
-                  <Icon className="w-4 h-4" />
-                </div>
-                <span className="text-sm text-slate-main">{d.value}</span>
-                <span className="ml-auto text-xs font-medium text-slate-muted capitalize">{d.label}</span>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Registrations */}
-      <section className="space-y-2 sm:space-y-3">
-        <h3 className="text-xs font-semibold text-slate-muted uppercase tracking-wider">Registrations</h3>
-        <div className="flex flex-wrap gap-2">
-          {profile.registrations.map((r) => (
-            <div
-              key={r}
-              className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-muted font-medium"
-            >
-              {r}
-            </div>
-          ))}
-        </div>
-      </section>
-    </div>
-  );
+import { useState } from "react";
+import { MapPin, Tag } from "lucide-react";
+import { useDemoWorkspace } from "@/lib/demo-workspace";
+export default function BusinessPage(){
+ const {profile,setProfile,resetWorkspace}=useDemoWorkspace();
+ const [name,setName]=useState(profile?.businessName??""); const [category,setCategory]=useState(profile?.category??""); const [industry,setIndustry]=useState(profile?.industry??""); const [location,setLocation]=useState(profile?.location??""); const [stage,setStage]=useState(profile?.stage??"Starting"); const [storeType,setStoreType]=useState(profile?.storeType??"Physical"); const [products,setProducts]=useState(profile?.products.join(", ")??""); const [employees,setEmployees]=useState(profile?.employeeCount?.toString()??""); const [budget,setBudget]=useState(profile?.investmentBudget??""); const [registrations,setRegistrations]=useState(profile?.registrations.join(", ")??""); const [message,setMessage]=useState("");
+ function save(e:React.FormEvent){e.preventDefault();if(!name.trim()||!category.trim()){setMessage("Business name and category are required.");return;}setProfile({businessName:name.trim(),category:category.trim(),industry:industry.trim(),location:location.trim(),stage,storeType,products:products.split(",").map(x=>x.trim()).filter(Boolean),employeeCount:employees?Number(employees):undefined,investmentBudget:budget.trim()||undefined,registrations:registrations.split(",").map(x=>x.trim()).filter(Boolean)});setMessage("Business profile saved in this browser.");}
+ const fields=[{label:"Business name",value:name,set:setName,placeholder:"e.g. My Retail Store"},{label:"Business category",value:category,set:setCategory,placeholder:"e.g. Retail shop"},{label:"Industry",value:industry,set:setIndustry,placeholder:"e.g. Fashion and accessories"},{label:"Location",value:location,set:setLocation,placeholder:"City, State"},{label:"Products or services (comma separated)",value:products,set:setProducts,placeholder:"Products or services"},{label:"Investment budget",value:budget,set:setBudget,placeholder:"Optional"},{label:"Registrations (comma separated)",value:registrations,set:setRegistrations,placeholder:"GST, Udyam, etc."}];
+ return <div className="px-4 py-4 space-y-4 text-slate-main"><div><h1 className="text-xl font-bold">My Business</h1><p className="text-sm text-slate-muted mt-1">This shared profile provides context to your advisor and document drafts.</p></div>{!profile&&<div className="rounded-xl bg-teal-primary/5 border border-teal-primary/20 p-3 text-sm">Your workspace is blank. Add your business details to personalize recommendations.</div>}
+ <form onSubmit={save} className="space-y-3">{fields.map(f=><label key={f.label} className="block text-xs font-semibold text-slate-muted">{f.label}<input value={f.value} onChange={e=>f.set(e.target.value)} placeholder={f.placeholder} className="mt-1 w-full rounded-xl border border-slate-200 p-3 text-sm text-slate-main font-normal outline-none focus:ring-2 focus:ring-teal-primary/30"/></label>)}
+ <div className="grid grid-cols-2 gap-3"><label className="text-xs font-semibold text-slate-muted">Business stage<select value={stage} onChange={e=>setStage(e.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 p-3 bg-white text-sm text-slate-main"><option>Starting</option><option>Early stage</option><option>Established</option><option>Expanding</option></select></label><label className="text-xs font-semibold text-slate-muted">Sales channel<select value={storeType} onChange={e=>setStoreType(e.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 p-3 bg-white text-sm text-slate-main"><option>Physical</option><option>Online</option><option>Both</option></select></label></div>
+ <label className="block text-xs font-semibold text-slate-muted">Employee count<input type="number" min="0" value={employees} onChange={e=>setEmployees(e.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 p-3 text-sm font-normal"/></label><button className="w-full rounded-xl bg-teal-primary p-3 text-sm font-semibold text-white">Save business profile</button>{message&&<p className="text-xs text-teal-primary">{message}</p>}</form>
+ {profile&&<section className="rounded-xl border border-slate-200 p-3 space-y-2"><h2 className="font-semibold text-sm">Saved profile preview</h2><p className="text-sm">{profile.businessName} · {profile.category}</p><p className="text-xs text-slate-muted flex gap-2"><MapPin className="w-3 h-3"/>{profile.location||"Location not provided"}</p><p className="text-xs text-slate-muted flex gap-2"><Tag className="w-3 h-3"/>{profile.products.join(", ")||"No products added"}</p><button type="button" onClick={()=>{if(confirm("Clear this demo business profile and start over?")){resetWorkspace();setName("");setCategory("");setIndustry("");setLocation("");setProducts("");setEmployees("");setBudget("");setRegistrations("");setMessage("Demo workspace cleared.");}}} className="text-xs text-red-600 underline">Reset demo workspace</button></section>}
+ <Link href="/onboarding" className="text-sm text-teal-primary underline">Use conversational onboarding instead</Link></div>;
 }
