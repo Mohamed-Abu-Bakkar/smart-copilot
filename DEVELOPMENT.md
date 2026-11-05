@@ -1,13 +1,25 @@
 # Smart Copilot development setup
 
 ## Persistent workspace database
-Smart Copilot uses Convex as its database for the shared demo workspace:
+Smart Copilot uses the canonical Convex `workspaces` table for:
 - Business profile, including business goals
 - Saved policy and document drafts
 - AI advisor conversation history (last 100 messages)
 - One shared profile context consumed by the Advisor, Scheme Navigator and Document Studio
 
-A browser-generated workspace ID links this development workspace to its Convex record. This survives refreshes and browser restarts on the same browser profile. Because authentication is intentionally deferred, it does not yet sync across different browsers/devices and must not be treated as private multi-user production storage.
+A browser-generated workspace ID links this development workspace to its Convex record. It survives refreshes and browser restarts on the same browser profile. Because authentication is intentionally deferred, it does not yet sync across different browsers/devices and must not be treated as private multi-user production storage.
+
+## One-time legacy data migration
+The previous table was named `demoWorkspaces`. The schema temporarily retains it so existing data can be copied safely.
+
+1. Pull the latest `feat/core-mvp-implementation` branch.
+2. Run `npx convex dev` and wait for the updated schema and functions to deploy.
+3. In a second terminal, run `npx convex run workspace:migrateLegacyWorkspaces`.
+4. Confirm the command reports the migrated rows and `legacyRowsRemoved`.
+5. Refresh the app. The app now reads and writes the `workspaces` table.
+6. After confirming the migration succeeded, the legacy `demoWorkspaces` table can be removed from `convex/schema.ts` in a follow-up cleanup and deployed.
+
+The migration preserves workspace IDs, profiles, saved documents and advisor messages. If a canonical row already exists, it merges missing legacy profile/documents and combines message history rather than overwriting current data.
 
 ## Run locally
 1. Install dependencies with `npm install`.
@@ -29,6 +41,11 @@ Authentication is intentionally deferred. The current browser-generated workspac
 
 ## Known MVP limitations
 - Workspace persistence is on Convex, but this unauthenticated development workspace is tied to one browser profile.
-- AI output must be reviewed; no legal compliance or eligibility guarantee is made.
-- Document export is plain text in this first pass; PDF/DOCX, document version history, official-source sync, vector search and multilingual QA remain follow-up work.
+- AI output must be reviewed; no legal compliance or scheme eligibility guarantee is made.
+- Scheme discovery uses a small curated catalogue and AI matching; there is no live official-source sync, application tracking, deadline monitoring or verified eligibility engine.
+- Document export is plain text only; PDF/DOCX, document version history, reusable custom templates and e-signature are not implemented.
+- The Advisor is a basic request/response chat; streaming, voice input/output, task tracking and proactive reminders are not implemented.
+- Search/RAG over uploaded business files, vector search, multilingual quality assurance and citations from live authoritative sources are not implemented.
+- Authentication, account ownership, team roles, multi-user collaboration and cross-device sync are not implemented.
+- Notifications, analytics, billing/subscriptions and production observability are not implemented.
 - Run `npm run lint` and `npm run build` locally after starting Convex and configuring environment variables.
