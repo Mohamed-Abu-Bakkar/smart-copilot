@@ -121,7 +121,7 @@ export default function LandingPage() {
 
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center sm:justify-start">
               <Link
-                href="/onboarding"
+                href="/signup"
                 className="flex items-center justify-center gap-2 px-4 py-2.5 sm:px-6 sm:py-3.5 rounded-full bg-teal-primary text-white text-sm font-semibold shadow-lg shadow-teal-primary/25 hover:bg-teal-primary-hover transition-all"
               >
                 Get Started <ArrowRight className="w-4 h-4" />
