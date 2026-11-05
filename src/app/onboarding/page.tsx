@@ -123,10 +123,6 @@ export default function ProfileBuilderPage() {
 
   function submit(e: FormEvent) {
     e.preventDefault();
-    if (stepIndex === 7 && !draft.trim()) {
-      if (current.optional) addAnswer("Not provided");
-      return;
-    }
     addAnswer(draft);
   }
 
