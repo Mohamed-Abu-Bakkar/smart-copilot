@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isAuthenticated } from "@/lib/auth-server";
 
 type Turn = { role?: string; content?: string };
 type ExtractedProfile = {
@@ -22,6 +23,7 @@ function parseJsonObject(raw: string): ExtractedProfile {
 }
 
 export async function POST(request: NextRequest) {
+  if (!(await isAuthenticated())) return NextResponse.json({ error: "Please sign in to continue." }, { status: 401 });
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) return NextResponse.json({ error: "Add GROQ_API_KEY to .env.local to create the AI profile summary." }, { status: 503 });
 
