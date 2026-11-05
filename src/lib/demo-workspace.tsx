@@ -8,7 +8,7 @@ import { convexClient } from "@/lib/convex";
 export type BusinessProfile = {
   businessName: string; category: string; industry: string; location: string;
   stage: string; storeType: string; products: string[]; employeeCount?: number;
-  investmentBudget?: string; registrations: string[];
+  investmentBudget?: string; registrations: string[]; goals?: string[];
 };
 export type SavedDocument = { id: string; title: string; type: string; content: string; updatedAt: number };
 export type AdvisorMessage = { role: "user" | "assistant"; content: string; createdAt?: number };
