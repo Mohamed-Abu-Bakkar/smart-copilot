@@ -25,6 +25,8 @@ const prompts = [
   { title: "Explore relevant MSME support", tag: "Schemes", icon: Building2 },
 ];
 
+type ActivityItem = { id: string; title: string; type: "document" | "chat"; time: number; status: string; href: string };
+
 const NAV_TABS = [
   { href: "/home", icon: Store, label: "Home" },
   { href: "/advisor", icon: MessageCircle, label: "Advisor" },
@@ -51,7 +53,7 @@ export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const activities = useMemo(() => {
-    const items = documents.map(document => ({
+    const items: ActivityItem[] = documents.map(document => ({
       id: "doc-" + document.id,
       title: document.title,
       type: "document" as const,
