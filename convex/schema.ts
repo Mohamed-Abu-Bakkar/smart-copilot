@@ -11,6 +11,16 @@ const savedDocument = v.object({ id: v.string(), title: v.string(), type: v.stri
 const message = v.object({ role: v.union(v.literal("user"), v.literal("assistant")), content: v.string(), createdAt: v.number() });
 
 export default defineSchema({
+  workspaces: defineTable({
+    workspaceId: v.string(),
+    profile: v.optional(profile),
+    documents: v.array(savedDocument),
+    messages: v.array(message),
+    updatedAt: v.number(),
+  }).index("by_workspaceId", ["workspaceId"]),
+
+  // Temporary legacy table. Keep until migrateLegacyWorkspaces has been run
+  // against the deployment that contains the old demoWorkspaces records.
   demoWorkspaces: defineTable({
     workspaceId: v.string(),
     profile: v.optional(profile),
