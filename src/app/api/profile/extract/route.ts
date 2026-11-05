@@ -1,11 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const emptyProfile = {
-  businessName: "", category: "", industry: "", location: "", stage: "Starting",
-  storeType: "Physical", products: [], employeeCount: undefined, investmentBudget: "",
-  registrations: [], goals: [],
-};
-
 export async function POST(request: NextRequest) {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) return NextResponse.json({ error: "Add GROQ_API_KEY to .env.local to create the AI profile summary." }, { status: 503 });
