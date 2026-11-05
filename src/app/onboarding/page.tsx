@@ -156,7 +156,7 @@ export default function ProfileBuilderPage() {
 
         <section className="flex-1 space-y-4 pb-4">
           {messages.map((message, index) => <div key={index} className={`flex items-end gap-2 ${message.role === "user" ? "justify-end" : "justify-start"}`}>
-            {message.role === "assistant" && <Image src="/images/business-assistant-illustration.png" alt="Smart Copilot assistant" width={36} height={36} className="h-9 w-9 shrink-0 rounded-full border border-teal-100 object-cover" />}
+            {message.role === "assistant" && <Image src="/images/chatbot-profile-logo.png" alt="Smart Copilot assistant" width={36} height={36} className="h-9 w-9 shrink-0 rounded-full border border-teal-100 object-cover" />}
             <div className={`max-w-[86%] rounded-2xl px-4 py-3 text-[13px] leading-relaxed shadow-sm ${message.role === "user" ? "rounded-br-md bg-[#d9f8ef] text-slate-800" : "rounded-bl-md border border-slate-100 bg-white text-slate-700"}`}>{message.content}</div>
             {message.role === "user" && <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500"><UserRound className="h-4 w-4"/></div>}
           </div>)}
