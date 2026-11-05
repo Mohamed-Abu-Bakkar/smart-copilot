@@ -83,6 +83,20 @@ export const migrateLegacyWorkspaces = mutation({
         .unique();
 
       if (current) {
+        // Preserve the current row while filling gaps from the legacy record.
+        const mergedDocuments = [...current.documents];
+        for (const document of legacy.documents) {
+          if (!mergedDocuments.some(item => item.id === document.id)) mergedDocuments.push(document);
+        }
+        const mergedMessages = [...legacy.messages, ...current.messages]
+          .sort((a, b) => a.createdAt - b.createdAt)
+          .slice(-100);
+        await ctx.db.patch(current._id, {
+          ...(current.profile ? {} : legacy.profile ? { profile: legacy.profile } : {}),
+          documents: mergedDocuments,
+          messages: mergedMessages,
+          updatedAt: Math.max(current.updatedAt, legacy.updatedAt),
+        });
         alreadyPresent += 1;
       } else {
         await ctx.db.insert("workspaces", {
