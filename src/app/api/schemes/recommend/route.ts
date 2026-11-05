@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isAuthenticated } from "@/lib/auth-server";
 
 const catalogue = [
   { name: "PMEGP", type: "Subsidy / credit-linked support", url: "https://www.kviconline.gov.in/pmegpeportal/", scope: "New micro-enterprise project information; check current project and applicant criteria with KVIC." },
@@ -10,6 +11,7 @@ const catalogue = [
 ];
 
 export async function POST(request: NextRequest) {
+  if (!(await isAuthenticated())) return NextResponse.json({ error: "Please sign in to continue." }, { status: 401 });
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) return NextResponse.json({ error: "AI scheme matching is not configured. Add GROQ_API_KEY." }, { status: 503 });
   try {
