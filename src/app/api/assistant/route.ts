@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isAuthenticated } from "@/lib/auth-server";
 
 export async function POST(request: NextRequest) {
+  if (!(await isAuthenticated())) return NextResponse.json({ error: "Please sign in to continue." }, { status: 401 });
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) return NextResponse.json({ error: "AI is not configured yet. Add GROQ_API_KEY to .env.local and restart the dev server." }, { status: 503 });
   try {
