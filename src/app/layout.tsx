@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
-import { ConvexClientProvider } from "@/components/ConvexClientProvider";
-import { DemoWorkspaceProvider } from "@/lib/demo-workspace";
-import { getToken } from "@/lib/auth-server";
+import { AuthProviders } from "@/components/AuthProviders";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -12,14 +11,21 @@ export const metadata: Metadata = {
   description: "AI-powered business guidance, government schemes, and document creation for micro and small businesses in India.",
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const token = await getToken();
+function AppLoadingFallback() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-background px-6 text-sm text-muted-foreground">
+      Loading Smart Copilot…
+    </div>
+  );
+}
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body className={inter.variable + " font-sans antialiased"}>
-        <ConvexClientProvider initialToken={token}>
-          <DemoWorkspaceProvider>{children}</DemoWorkspaceProvider>
-        </ConvexClientProvider>
+        <Suspense fallback={<AppLoadingFallback />}>
+          <AuthProviders>{children}</AuthProviders>
+        </Suspense>
       </body>
     </html>
   );
