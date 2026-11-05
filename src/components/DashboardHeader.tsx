@@ -1,10 +1,11 @@
 "use client";
 
-import { Bell, ChevronDown, Menu } from "lucide-react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { ChevronDown, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LogoInline } from "./Logo";
 import { LanguagePill } from "./LanguagePill";
+import { useDemoWorkspace } from "@/lib/demo-workspace";
 
 interface DashboardHeaderProps {
   onMenu?: () => void;
@@ -13,64 +14,25 @@ interface DashboardHeaderProps {
   className?: string;
 }
 
-export function DashboardHeader({
-  onMenu,
-  lang,
-  onLangChange,
-  className,
-}: DashboardHeaderProps) {
-  const router = useRouter();
+export function DashboardHeader({ onMenu, lang, onLangChange, className }: DashboardHeaderProps) {
+  const { profile } = useDemoWorkspace();
+  const initials = profile?.businessName
+    ? profile.businessName.trim().split(/\\s+/).slice(0, 2).map(part => part[0]?.toUpperCase()).join("")
+    : "B";
 
-  const handleLogout = () => {
-    router.push("/login");
-  };
   return (
-    <div
-      className={cn(
-        "flex items-center justify-between gap-2 md:gap-4 px-4 py-3.5 border-b border-slate-200 bg-white",
-        className,
-      )}
-    >
+    <div className={cn("flex items-center justify-between gap-2 md:gap-4 px-4 py-3.5 border-b border-slate-200 bg-white", className)}>
       <div className="flex items-center gap-2">
-        {onMenu && (
-          <button
-            onClick={onMenu}
-            className="p-1.5 rounded-md text-slate-muted hover:text-slate-main hover:bg-slate-100 transition-colors shrink-0"
-            aria-label="Open menu"
-          >
-            <Menu className="w-5 h-5" />
-          </button>
-        )}
+        {onMenu && <button onClick={onMenu} className="shrink-0 rounded-md p-1.5 text-slate-muted transition-colors hover:bg-slate-100 hover:text-slate-main" aria-label="Open menu"><Menu className="h-5 w-5" /></button>}
         <LogoInline className="flex-shrink-0" />
       </div>
-
-      <div className="flex items-center gap-1 md:gap-2">
+      <div className="flex items-center gap-2">
         <LanguagePill lang={lang} onChange={onLangChange} />
-
-        <div className="relative ml-1 md:ml-2">
-          <button
-            className="relative p-1.5 rounded-full text-slate-muted hover:text-teal-primary transition-colors"
-            aria-label="Notifications"
-          >
-            <Bell className="w-5 h-5" />
-            <span className="absolute top-1 right-1 flex h-2 w-2 items-center justify-center">
-              <span className="h-2 w-2 rounded-full bg-red-500 border border-white" />
-            </span>
-          </button>
-        </div>
-
-        <div className="relative ml-1 md:ml-3">
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-200 bg-white text-slate-main text-sm font-medium hover:bg-slate-50 transition-colors"
-            aria-label="Profile"
-          >
-            <span className="h-7 w-7 rounded-full bg-teal-primary flex items-center justify-center text-white text-[10px] font-bold">
-              MA
-            </span>
-            <ChevronDown className="w-3 h-3 text-slate-muted" />
-          </button>
-        </div>
+        <Link href="/business" className="ml-1 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2 py-1.5 text-sm font-medium text-slate-main transition-colors hover:bg-slate-50" aria-label="Open business profile">
+          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-teal-primary text-[10px] font-bold text-white">{initials}</span>
+          <span className="hidden max-w-24 truncate text-xs sm:inline">{profile?.businessName || "My business"}</span>
+          <ChevronDown className="h-3 w-3 text-slate-muted" />
+        </Link>
       </div>
     </div>
   );
