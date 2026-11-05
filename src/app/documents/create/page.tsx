@@ -37,9 +37,9 @@ export default function CreateDocumentPage() {
     finally { setLoading(false); }
   }
 
-  function save() {
+  async function save() {
     if (!content.trim()) return;
-    saveDocument({ title: template.title, type: template.type, content });
+    await saveDocument({ title: template.title, type: template.type, content });
     setSaved(true);
   }
 
@@ -64,7 +64,7 @@ export default function CreateDocumentPage() {
     {content && <section className="space-y-2"><div className="flex justify-between items-center"><h2 className="font-semibold text-sm">Editable draft</h2><span className="text-xs text-slate-muted">Not legal advice</span></div>
       <textarea value={content} onChange={e => {setContent(e.target.value); setSaved(false);}} rows={20} className="w-full rounded-xl border border-slate-200 p-3 text-sm leading-relaxed outline-none focus:ring-2 focus:ring-teal-primary/30"/>
       <div className="grid grid-cols-2 gap-2"><button onClick={save} className="rounded-xl bg-teal-primary text-white p-3 text-sm font-semibold flex items-center justify-center gap-2"><Save className="w-4 h-4"/>Save draft</button><button onClick={download} className="rounded-xl border border-slate-200 p-3 text-sm font-semibold flex items-center justify-center gap-2"><Download className="w-4 h-4"/>Download .txt</button></div>
-      {saved && <p className="text-xs text-green-700">Saved in this browser's demo workspace.</p>}
+      {saved && <p className="text-xs text-green-700">Saved to your Convex workspace.</p>}
       <p className="text-xs text-slate-muted">Review all placeholders and obtain professional review for employment, tax, privacy or other regulated documents. Saved drafts currently live in browser storage; cloud sync and PDF/DOCX export are not yet configured.</p>
     </section>}
   </div>;
