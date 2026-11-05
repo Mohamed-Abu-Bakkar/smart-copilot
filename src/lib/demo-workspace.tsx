@@ -21,13 +21,14 @@ type Workspace = {
   resetWorkspace: () => Promise<void>;
 };
 const WorkspaceContext = createContext<Workspace | null>(null);
-const ID_KEY = "smart-copilot-demo-workspace-id";
+const ID_KEY = "smart-copilot-workspace-id";
+const LEGACY_ID_KEY = "smart-copilot-demo-workspace-id";
 
 function WorkspaceDataProvider({ children }: { children: React.ReactNode }) {
   const [workspaceId, setWorkspaceId] = useState("");
   const [clientReady, setClientReady] = useState(false);
   useEffect(() => {
-    let id = window.localStorage.getItem(ID_KEY);
+    let id = window.localStorage.getItem(ID_KEY) ?? window.localStorage.getItem(LEGACY_ID_KEY);
     if (!id) {
       id = crypto.randomUUID();
       window.localStorage.setItem(ID_KEY, id);
