@@ -9,7 +9,7 @@ import { BusinessProfile, useDemoWorkspace } from "@/lib/demo-workspace";
 type ChatMessage = { role: "assistant" | "user"; content: string };
 type Step = { key: string; phase: string; question: string; hint: string; placeholder: string; suggestions?: string[]; optional?: boolean };
 const steps: Step[] = [
-  { key: "businessName", phase: "Profile", question: "Hi! 👋 I'm your Business Copilot. Let's set up your business profile. First, what's the name of your business?", hint: "Your shop, brand or registered business name.", placeholder: "Type your business name..." },
+  { key: "businessName", phase: "Profile", question: "I'm your Business Copilot. Let's set up your business profile. First, what's the name of your business?", hint: "Your shop, brand or registered business name.", placeholder: "Type your business name..." },
   { key: "category", phase: "Profile", question: "Nice! What type of business do you run?", hint: "Choose the closest match. You can explain more in your reply.", placeholder: "Or type another business type...", suggestions: ["Retail Shop", "Manufacturing", "Service Business", "Other"] },
   { key: "industry", phase: "Details", question: "Which industry or sector best describes your business?", hint: "For example, fashion, food, beauty, construction or technology.", placeholder: "e.g. Fashion and accessories", optional: true },
   { key: "location", phase: "Details", question: "Where is your business based?", hint: "City and state are enough. This helps tailor local guidance and scheme discovery.", placeholder: "e.g. Madurai, Tamil Nadu" },
