@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowLeft, Download, Save, Sparkles } from "lucide-react";
+import { ArrowLeft, Download, Save, Sparkles, Building2 } from "lucide-react";
 import { useDemoWorkspace } from "@/lib/demo-workspace";
 
 const templates = [
@@ -53,11 +53,11 @@ export default function CreateDocumentPage() {
   return <div className="px-4 py-4 space-y-4 text-slate-main">
     <Link href="/documents" className="inline-flex items-center gap-2 text-sm text-teal-primary"><ArrowLeft className="w-4 h-4"/> Documents</Link>
     <div><h1 className="text-xl font-bold">Document Studio</h1><p className="text-sm text-slate-muted mt-1">Create a first draft using your business context. Review every term before use.</p></div>
-    {!profile && <p className="rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-800">Your business profile is blank. Add details in My Business or use placeholders in the draft.</p>}
+    {profile ? <div className="rounded-xl border border-teal-primary/20 bg-teal-primary/5 p-3 space-y-1"><div className="flex items-center gap-2 text-xs font-semibold text-teal-primary"><Building2 className="w-4 h-4"/>Using your saved business profile</div><p className="text-xs text-slate-muted">{[profile.businessName,profile.category,profile.industry,profile.location].filter(Boolean).join(" · ")}</p>{profile.goals?.length ? <p className="text-xs text-slate-muted">Business goals: {profile.goals.join(", ")}</p> : null}<p className="text-[10px] text-slate-muted">You won't need to repeat these business details. Add only the document-specific rules below.</p></div> : <p className="rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-800">Your business profile is blank. Add details in My Business or use placeholders in the draft.</p>}
     <section className="space-y-2"><label className="text-xs font-semibold uppercase tracking-wide text-slate-muted">Choose a document</label>
       <select value={template.title} onChange={e => setTemplate(templates.find(t => t.title === e.target.value) ?? templates[0])} className="w-full rounded-xl border border-slate-200 p-3 text-sm bg-white">{templates.map(t => <option key={t.title}>{t.title}</option>)}</select>
       <label className="block text-xs font-semibold uppercase tracking-wide text-slate-muted pt-2">Your rules and requirements</label>
-      <textarea value={answers} onChange={e => setAnswers(e.target.value)} rows={5} placeholder="Describe the rules you actually follow. For example: returns accepted within 7 days with receipt, unused condition..." className="w-full rounded-xl border border-slate-200 p-3 text-sm outline-none focus:ring-2 focus:ring-teal-primary/30"/>
+      <textarea value={answers} onChange={e => setAnswers(e.target.value)} rows={5} placeholder="Add only the rules specific to this document. Your saved business details are already included..." className="w-full rounded-xl border border-slate-200 p-3 text-sm outline-none focus:ring-2 focus:ring-teal-primary/30"/>
       <button onClick={generate} disabled={loading} className="w-full flex items-center justify-center gap-2 rounded-xl bg-teal-primary text-white p-3 text-sm font-semibold disabled:opacity-60"><Sparkles className="w-4 h-4"/>{loading ? "Drafting..." : "Generate draft"}</button>
       {error && <p className="text-sm text-red-600">{error}</p>}
     </section>
